@@ -2,11 +2,16 @@ from flask import Flask, request, jsonify
 import json
 from langchain.prompts import PromptTemplate
 from langchain.llms import OpenAI
+import google.generativeai as genai
+import os
+from api import gemApi
 
+os.environ["GOOGLE_API_KEY"] = gemApi
+genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
 app = Flask(__name__)
 
 # LangChain setup
-llm = OpenAI(temperature=0.9)
+model = genai.GenerativeModel(model_name = "gemini-pro")
 
 # Define a simple PromptTemplate
 template = """
@@ -27,20 +32,25 @@ def process_json():
     if file.filename == '':
         return jsonify({"error": "No file selected for uploading"}), 400
 
-    if file.content_type != 'application/json':
-        return jsonify({"error": "Uploaded file must be a JSON"}), 400
+    # if file.content_type != 'application/json':
+    #     return jsonify({"error": "Uploaded file must be a JSON"}), 400
 
     try:
-        # Read and parse the JSON file
-        json_data = json.load(file)
+        
+        # Instead of treating file like a dictionary, use file.read() to get its contents
+        file_contents = file.read()
+            
+        
+        # Read and parse the JSON file content
+        # json_data = jsonify(file)
 
         # Create a prompt with LangChain's prompt template
-        prompt = prompt_template.format(data=json.dumps(json_data, indent=2))
+        # prompt = prompt_template.format(data=json.dumps(json_data, indent=2))
 
         # Generate a response using LangChain’s LLM
-        response = llm(prompt)
+        # response =  model.generate_content(json_data["question"]).text
 
-        return jsonify({"response": response})
+        return jsonify({"response": type(file)})
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
