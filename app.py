@@ -21,24 +21,16 @@ You are an AI assistant. Based on the provided JSON data, generate a helpful res
 
 prompt_template = PromptTemplate(template=template, input_variables=["data"])
 
-@app.route('/process-json', methods=['POST'])
+@app.route('/ask', methods=['GET'])
 def process_json():
     # Ensure the request has a file and it's JSON
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part in the request"}), 400
+    question = request.args.get("question")
 
-    file = request.files['file']
-
-    if file.filename == '':
-        return jsonify({"error": "No file selected for uploading"}), 400
-
-    # if file.content_type != 'application/json':
-    #     return jsonify({"error": "Uploaded file must be a JSON"}), 400
 
     try:
         
         # Instead of treating file like a dictionary, use file.read() to get its contents
-        file_contents = file.read()
+        
             
         
         # Read and parse the JSON file content
@@ -48,9 +40,9 @@ def process_json():
         # prompt = prompt_template.format(data=json.dumps(json_data, indent=2))
 
         # Generate a response using LangChain’s LLM
-        # response =  model.generate_content(json_data["question"]).text
+        response =  model.generate_content(question).text
 
-        return jsonify({"response": type(file)})
+        return jsonify({"response": response})
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
