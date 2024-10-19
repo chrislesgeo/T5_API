@@ -1,7 +1,5 @@
 from flask import Flask, request, jsonify
 import json
-from langchain.prompts import PromptTemplate
-from langchain.llms import OpenAI
 import google.generativeai as genai
 import os
 from api import gemApi

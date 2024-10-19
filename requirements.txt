@@ -1,4 +1,3 @@
-langchain
+google.generativeai
 numpy
 flask
-openai
